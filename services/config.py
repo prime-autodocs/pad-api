@@ -20,9 +20,7 @@ class Settings:
 
     #Main Config
     API_HOST: str = os.environ.get('API_HOST')
-    API_PORT: str = os.environ.get('API_PORT')
     LOG_LEVEL: str = os.environ.get('LOG_LEVEL', 'debug')
     RELOAD: str = os.environ.get('RELOAD')
-    WORKERS: str = os.environ.get('API_WORKERSHOST')
 
 settings = Settings()

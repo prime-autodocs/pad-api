@@ -4,9 +4,7 @@
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
 # Folders
-documentos/
-TESTES/
-IGNORE/
+
 
 # Node artifact files
 node_modules/

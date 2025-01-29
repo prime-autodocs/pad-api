@@ -18,10 +18,10 @@ if __name__ == "__main__":
         uvicorn.run(
             "interfaces.api.config:app",
             host=settings.API_HOST,
-            port=settings.API_PORT,
+            port=8000,
             log_level=settings.LOG_LEVEL,
             reload=settings.RELOAD,
-            workers=settings.WORKERS
+            workers=1
         )
     
     elif args.mode == "cli":
