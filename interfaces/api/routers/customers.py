@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from typing import List
 from core.customers import Customer
-from interfaces.api.schemas.customers import CustomersBase, CustomerCreate, CustomerUpdate, CustomerDelete
+from interfaces.api.schemas.customers import CustomersBase, CustomerCreate, CustomerUpdate
 
 router = APIRouter()
 
