@@ -8,8 +8,7 @@ from database.database import db
 from database.models.customers import Customers
 from database.models.customers_history import CustomersHistory
 from database.queries.customers import CustomersQueries
-from interfaces.api.schemas.customers import CustomersBase, CustomerCreate, CustomerUpdate, CustomerDelete
-from services.mysql_errors import mysql_error
+from interfaces.api.schemas.customers import CustomersBase
 from services.utils.customer_validation import customer_data_validation
 from services.utils.customer_data_formatter import data_formatter
 
@@ -17,16 +16,40 @@ class Customer:
     
     @classmethod
     def get_all_customers(cls) -> List[CustomersBase]:
+        """ Get all customers 
+
+        Returns:
+            List[CustomersBase]: List of all customers in customer table
+        """
         customers = CustomersQueries.get_all_customers()
         return customers
 
     @classmethod
     def get_customer_by_cpf_number(cls, cpf_number: str) -> CustomersBase:
+        """ Get a single customer by its cpf number
+
+        Args:
+            cpf_number (str): 11 or 14 numbers for CPF or CNPJ
+
+        Returns:
+            CustomersBase: Object of a single customer with all atributes
+        """
         customer = CustomersQueries.get_customer_by_cpf(cpf_number=cpf_number)
         return customer
     
     @classmethod
-    def create_customer(cls, data: Customers) -> CustomerCreate:
+    def create_customer(cls, data: Customers) -> None:
+        """ Create a single customer 
+
+        Args:
+            data (Customers): A model with customers atributes
+
+        Returns:
+            Message of sucess
+            
+        Exceptions:
+            400: General create error
+        """
         validation = customer_data_validation(payload=data)
         if not validation.get("is_valid"):
             return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation.get("errors"))
@@ -58,8 +81,19 @@ class Customer:
             return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral no cadastro do cliente: {e}")
 
     @classmethod    
-    def update_customer(cls, cpf_number: str, new_data: Customers) -> CustomerUpdate:
+    def update_customer(cls, cpf_number: str, new_data: Customers) -> None:
+        """ Update a single customer
 
+        Args:
+            cpf_number (str): 11 or 14 numbers for CPF or CNPJ
+            new_data (Customers): A model with customers atributes the will change
+
+        Returns:
+            Message of sucess
+            
+        Exceptions:
+            400: General update error
+        """
         validation = customer_data_validation(payload=new_data)
         if not validation.get("is_valid"):
             return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation.get("errors"))
@@ -107,7 +141,18 @@ class Customer:
             
         
     @classmethod    
-    def delete_customer(cls, cpf_number: str) -> CustomerDelete:
+    def delete_customer(cls, cpf_number: str) -> None:
+        """ Delete a single customer
+
+        Args:
+            cpf_number (str): 11 or 14 numbers for CPF or CNPJ
+
+        Returns:
+            Message of sucess
+            
+        Exceptions:
+            400: General delete error
+        """
         customer = CustomersQueries.get_customer_by_cpf(cpf_number=cpf_number)
         if not customer:
             return HTTPException(
