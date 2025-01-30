@@ -22,3 +22,17 @@ class GenderEnum(enum.Enum):
     male = "male"
     female = "female"
     others = "others"
+    
+@enum.unique
+class FuelEnum(enum.Enum):
+    """Type of fuel of the vehicle"""
+    alchool = 'alchool'
+    gas = 'gas'
+    gasoline = 'gasoline'
+    alchool_gas = 'alchool/gas'
+    gasoline_gas = 'gasoline/gas'
+    diesel = 'diesel'
+
+    
+    
+
