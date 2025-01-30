@@ -41,8 +41,3 @@ class CustomerUpdate(CustomerCreate):
    
    class Config:
       from_attributes = True
-
-class CustomerDelete(CustomersBase):
-
-   class Config:
-      from_attributes = True
