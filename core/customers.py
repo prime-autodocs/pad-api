@@ -139,7 +139,7 @@ class Customer:
             customer_id (int): ID of customer
 
         Returns:
-            CustomersBase: Object of a single customer with all atributes
+            CustomersBase: Object of a single customer with all atributes 
         """
         customer = CustomersQueries.get_customer_by_tax_id(tax_id=tax_id)          
         return customer
