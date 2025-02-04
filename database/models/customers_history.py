@@ -8,4 +8,4 @@ class CustomersHistory(Base):
     customer_id = Column("customer_id", Integer, nullable=False)
     updated_at = Column("updated_at", TIMESTAMP(timezone=True), server_default=text("CURRENT_TIMESTAMP"), nullable=False)
     updated_by = Column("updated_by", String(255))
-    column_change = Column("column_change", String(255))
+    description = Column("description", String(255))
