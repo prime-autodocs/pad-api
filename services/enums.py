@@ -33,6 +33,10 @@ class FuelEnum(enum.Enum):
     gasoline_gas = 'gasoline/gas'
     diesel = 'diesel'
 
-    
+@enum.unique
+class TaxTypeEnum(enum.Enum):
+    """Type of tax id of the customer"""
+    CPF = 'CPF'
+    CNPJ = 'CNPJ'
     
 
