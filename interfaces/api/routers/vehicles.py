@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from typing import List
 from core.vehicles import Vehicle
-from interfaces.api.schemas.vehicles import VehiclesByCustomer
+from interfaces.api.schemas.vehicles import VehiclesByCustomer, VehicleCreate
 
 router = APIRouter()
 
@@ -20,4 +20,23 @@ async def get_vehicles_by_customer(customer_id: int) -> List[VehiclesByCustomer]
     response = Vehicle.get_vehicles_by_customer(customer_id=customer_id)
     return response
 
+@router.post(
+    "/"
+)
+async def create_vehicle(
+    data: VehicleCreate
+) -> None:
+    """_summary_
+
+    Args:
+        data (VehicleCreate): Receive
+
+    Returns:
+        Message of sucess
+        
+    Exceptions:
+        400: General create error
+    """
+    response = Vehicle.create_vehicle(data=data)
+    return response
 
