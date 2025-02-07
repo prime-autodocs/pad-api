@@ -34,31 +34,10 @@ class Vehicle:
             return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation.get("errors"))
         data = data_formatter(payload=data)
 
-        vehicle = Vehicles(
-            customer_id=data.customer_id,
-            brand=data.brand,
-            model=data.model,
-            number_plate=data.number_plate,
-            chassis=data.chassis,
-            national_registry=data.national_registry,
-            year_fabric=data.year_fabric,
-            year_model=data.year_model,
-            fuel=data.fuel,
-            color=data.color,
-            category=data.category,
-            certification_number=data.certification_number,
-            crlv_image=data.crlv_image
-        )
-        
         try:
-            db.add(vehicle)
-            db.commit()
-            db.close()
-            
-            return HTTPException(status_code=status.HTTP_200_OK, detail=f"Cliente: {vehicle.number_plate} - {vehicle.brand} {vehicle.model} criado com sucesso")
-        except Exception as e:
-            db.rollback()
-            db.close()
+            VehiclesQueries.create_vehicle(data=data)
+            return HTTPException(status_code=status.HTTP_200_OK, detail=f"Veículo: {data.number_plate} - {data.brand} {data.model} criado com sucesso")
 
-            logger.error(f"Erro geral no cadastro do cliente: {e}")
-            return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral no cadastro do cliente: {e}")
+        except Exception as e:
+            logger.error(f"Erro geral no cadastro do veiculo: {e}")
+            return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral no cadastro do veiculo: {e}")

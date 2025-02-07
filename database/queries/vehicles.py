@@ -24,3 +24,27 @@ class VehiclesQueries():
                 detail=f"Cliente não encontrado."
             )
         return vehicle
+    
+    def create_vehicle(cls, data):
+        """Query to create a vehicle
+
+        Args:
+            data (Model): a model with vehicle atributes
+        """
+        vehicle = Vehicles(
+            customer_id=data.customer_id,
+            brand=data.brand,
+            model=data.model,
+            number_plate=data.number_plate,
+            chassis=data.chassis,
+            national_registry=data.national_registry,
+            year_fabric=data.year_fabric,
+            year_model=data.year_model,
+            fuel=data.fuel,
+            color=data.color,
+            category=data.category,
+            certification_number=data.certification_number,
+            crlv_image=data.crlv_image
+        )
+        
+        db.add(vehicle)
