@@ -6,7 +6,7 @@ class VehiclesQueries():
     table = Vehicles
     
     @classmethod
-    def get_vehicles_by_customer(cls, customer_id: int):
+    def get_vehicles_by_customer_id(cls, customer_id: int):
         """Query to get all vehicles from a customer
 
         Args:

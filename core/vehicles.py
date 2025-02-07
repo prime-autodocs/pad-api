@@ -14,7 +14,7 @@ from services.utils.vehicle_data_formatter import data_formatter
 class Vehicle:
     
     @classmethod
-    def get_vehicles_by_customer(cls, customer_id: int) -> List[VehiclesByCustomer]:
+    def get_vehicles_by_customer_id(cls, customer_id: int) -> List[VehiclesByCustomer]:
         """function to get all vehicle from a customer
 
         Args:
@@ -23,7 +23,7 @@ class Vehicle:
         Returns:
             List[VehiclesByCustomer]: a list of all vehicles from a customer
         """
-        vehicle = VehiclesQueries.get_vehicles_by_customer(customer_id=customer_id)
+        vehicle = VehiclesQueries.get_vehicles_by_customer_id(customer_id=customer_id)
         return vehicle
 
     @classmethod
