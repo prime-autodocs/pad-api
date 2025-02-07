@@ -1,3 +1,5 @@
+from fastapi import status, HTTPException
+
 from database.database import db
 from database.models.vehicles import Vehicles
 
@@ -15,4 +17,10 @@ class VehiclesQueries():
         Returns:
             Model Object: return each vehicle from a customer
         """
-        db.query(Vehicles).filter(Vehicles.customer_id == customer_id).all()
+        vehicle = db.query(Vehicles).filter(Vehicles.customer_id == customer_id).all()
+        if not vehicle:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Cliente não encontrado."
+            )
+        return vehicle
