@@ -18,8 +18,8 @@ class VehicleCreate(BaseModel):
     number_plate: str = None
     chassis: str = None
     national_registry: str = None
-    fabric_year: str = None
-    model_year: str = None
+    year_fabric: str = None
+    year_model: str = None
     fuel: str = None
     color: str = None
     category: str = None
