@@ -15,4 +15,4 @@ class VehiclesQueries():
         Returns:
             Model Object: return each vehicle from a customer
         """
-        return db.query(Vehicles).filter(Vehicles.customer_id == customer_id).all()
+        db.query(Vehicles).filter(Vehicles.customer_id == customer_id).all()

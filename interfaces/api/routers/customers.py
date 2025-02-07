@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from typing import List
 
 from core.customers import Customer
-from interfaces.api.schemas.customers import CustomersBase, CustomerCreate, CustomerUpdate
+from interfaces.api.schemas.customers import CustomersBase, CustomerCreate, CustomerUpdate, CustomerFinder
 
 router = APIRouter()
 
@@ -19,18 +19,18 @@ async def get_all_customers() -> List[CustomersBase]:
     return response
 
 @router.get(
-    "/{cpf_number}"
+    "/{customer_id}"
 )
-async def get_customer_by_cpf(cpf_number: str) -> CustomersBase:
-    """Endpoint that bring a single customer by CPF
+async def get_customer_by_id(customer_id: int) -> CustomersBase:
+    """Endpoint that bring a single customer by ID
 
     Args:
-        cpf_number (str): 11 or 14 numbers for CPF or CNPJ
+        customer_id (int): ID of customer
 
     Returns:
         CustomersBase: Object of a single customer with all atributes
     """
-    response = Customer.get_customer_by_cpf_number(cpf_number=cpf_number)
+    response = Customer.get_customer_by_id(customer_id=customer_id)
     return response
 
 @router.post(
@@ -39,13 +39,13 @@ async def get_customer_by_cpf(cpf_number: str) -> CustomersBase:
 async def create_customer(
     data: CustomerCreate
 ) -> None:
-    """_summary_
+    """Endpoint that create a customer in database
 
     Args:
-        data (CustomerCreate): Receive
+        data (CustomerCreate): Receive a model data of customer to create customer
 
     Returns:
-        Message of sucess
+        Message of success
         
     Exceptions:
         400: General create error
@@ -54,20 +54,57 @@ async def create_customer(
     return response
 
 @router.patch(
-    "/{cpf_number}"
+    "/{customer_id}"
 )
 async def update_customer(
-    cpf_number: str,
+    customer_id: int,
     new_data: CustomerUpdate
 ) -> None:
-    response = Customer.update_customer(cpf_number=cpf_number, new_data=new_data)
+    """Endpoint that update a customer in database
+
+    Args:
+        customer_id (int): ID of customer
+        new_data (CustomerUpdate): Receive a model data of customer to update customer
+
+    Returns:
+        Message of success
+        
+    Exceptions:
+        400: General create error
+    """
+    response = Customer.update_customer(customer_id=customer_id, new_data=new_data)
     return response
 
 @router.delete(
-    "/{cpf_number}"
+    "/{customer_id}"
 )
 async def delete_customer(
-    cpf_number: str
+    customer_id: int
 ) -> None:
-    response = Customer.delete_customer(cpf_number=cpf_number)
+    """Endpoint that delete a customer in database
+
+    Args:
+        customer_id (int): ID of customer
+
+    Returns:
+        _type_: _description_
+    """
+    response = Customer.delete_customer(customer_id=customer_id)
+    return response
+
+@router.get(
+    "/tax_id/{tax_id}"
+)
+async def get_customer_by_tax_id(
+    tax_id: str
+) -> CustomerFinder:
+    """Endpoint that bring a single customer by Tax ID
+
+    Args:
+        tax_id (str): 11 or 14 numbers for CPF or CNPJ
+
+    Returns:
+        CustomerFinder: Model with tax_id, full_name and tel_number
+    """
+    response = Customer.get_customer_by_tax_id(tax_id=tax_id)
     return response
