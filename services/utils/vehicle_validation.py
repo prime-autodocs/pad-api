@@ -21,12 +21,12 @@ def vehicle_data_validation(payload: Vehicles) -> dict:
         
     # Number Plate
     number_plate = payload.number_plate
-    if not re.fullmatch(r'^[A-Z]{3}-?\d[A-Z0-9]\d{2}$', number_plate):
+    if not re.fullmatch(r'^[A-Za-z]{3}-?\d[A-Za-z0-9]\d{2}$', number_plate):
         errors.append("Placa inválida. Placa não apresenta o padrão brasileiro.")
         
     # National registry
     national_registry = payload.national_registry
     if len(national_registry) != 11:
-        errors.append("Renavam inválido. Não pode conter mais que 11 caracteres")
+        errors.append("Renavam inválido. Deve conter apenas 11 caracteres")
     
     return {"is_valid": not errors, "errors": errors}

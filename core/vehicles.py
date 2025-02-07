@@ -46,7 +46,7 @@ class Vehicle:
             fuel=data.fuel,
             color=data.color,
             category=data.category,
-            certification_number=data.cerfification_number,
+            certification_number=data.certification_number,
             crlv_image=data.crlv_image
         )
         
