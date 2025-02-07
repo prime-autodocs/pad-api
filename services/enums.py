@@ -39,4 +39,8 @@ class TaxTypeEnum(enum.Enum):
     CPF = 'CPF'
     CNPJ = 'CNPJ'
     
-
+@enum.unique
+class CategoryEnum(enum.Enum):
+    """Type of vehicle category"""
+    rent = 'rent'
+    particular = 'particular'
