@@ -8,6 +8,7 @@ class UsersQueries():
     
     table = Users
     
+    @classmethod
     def get_user(cls, login: str, password: str):
         """Query to get a user by login and password
         
@@ -18,10 +19,16 @@ class UsersQueries():
         Returns:
             Model Object: User
         """
-        user = db.query(Users).filter(Users.login == login, Users.password == password).first()
+        user = db.query(Users).filter(Users.login == login).first()
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Usuário não encontrado."
+            )
+            
+        if password != user.password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Senha inválida."
             )
         return user
