@@ -26,7 +26,7 @@ async def get_vehicles_by_customer_id(customer_id: int) -> List[VehiclesByCustom
 async def create_vehicle(
     data: VehicleCreate
 ) -> None:
-    """_summary_
+    """Endpoint to create a vehicle
 
     Args:
         data (VehicleCreate): Receive
