@@ -25,6 +25,25 @@ class VehiclesQueries():
             )
         return vehicle
     
+    @classmethod
+    def get_vehicle_detail(cls, vehicle_id: int):
+        """ Query to get a vehicle detail
+        
+        Args:
+            vehicle_id (int): id from table vehicles
+        
+        Returns:
+            Model Object: return vehicle detail
+        """
+        vehicle = db.query(Vehicles).filter(Vehicles.id == vehicle_id).first()
+        if not vehicle:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Veículo não encontrado."
+            )
+        return vehicle
+        
+    @classmethod
     def create_vehicle(cls, data):
         """Query to create a vehicle
 

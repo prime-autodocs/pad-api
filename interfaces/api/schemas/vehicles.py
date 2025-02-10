@@ -1,8 +1,10 @@
 import datetime
 from typing import Optional
 from pydantic import BaseModel
+from services.enums import FuelEnum, CategoryEnum
 
 class VehiclesByCustomer(BaseModel):
+    id: int = None
     brand: str = None
     model: str = None
     number_plate: str = None
@@ -10,6 +12,21 @@ class VehiclesByCustomer(BaseModel):
     class Config:
       """Configs"""
       from_attributes = True
+      
+class VehicleDetail(BaseModel):
+    id: int = None
+    brand: str = None
+    model: str = None
+    number_plate: str = None
+    chassis: str = None
+    national_registry: str = None
+    year_fabric: str = None
+    year_model: str = None
+    fuel: FuelEnum = None
+    color: str = None
+    category: CategoryEnum = None
+    certification_number: str = None
+    crlv_image: str = None
       
 class VehicleCreate(BaseModel):
     customer_id: int = None

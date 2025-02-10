@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from typing import List
 from core.vehicles import Vehicle
-from interfaces.api.schemas.vehicles import VehiclesByCustomer, VehicleCreate
+from interfaces.api.schemas.vehicles import VehiclesByCustomer, VehicleCreate, VehicleDetail
 
 router = APIRouter()
 
@@ -18,6 +18,21 @@ async def get_vehicles_by_customer_id(customer_id: int) -> List[VehiclesByCustom
         List[VehiclesByCustomer]: return each vehicle from a customer
     """
     response = Vehicle.get_vehicles_by_customer_id(customer_id=customer_id)
+    return response
+
+@router.get(
+    "/{vehicle_id}"
+)
+async def get_vehicle_detail(vehicle_id: int) -> VehicleDetail:
+    """ Endpoint that return a vehicle detail
+    
+    Args:
+        vehicle_id (int): id from table vehicles
+        
+    Returns:
+        VehicleDetail: return vehicle detail
+    """
+    response = Vehicle.get_vehicle_detail(vehicle_id=vehicle_id)
     return response
 
 @router.post(
