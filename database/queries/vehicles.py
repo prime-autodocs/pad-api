@@ -67,3 +67,7 @@ class VehiclesQueries():
         )
         
         db.add(vehicle)
+        
+    @classmethod
+    def delete_vehicle(cls, vehicle: Vehicles):
+        db.delete(vehicle)
