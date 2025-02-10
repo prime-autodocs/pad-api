@@ -47,7 +47,7 @@ class Vehicle:
             data (VehicleCreate): a model with vehicle atributes
         
         Returns:
-            Message of sucess
+            Message of success
         """
         validation = vehicle_data_validation(payload=data)
         if not validation.get("is_valid"):
