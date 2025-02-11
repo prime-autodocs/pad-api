@@ -77,8 +77,8 @@ class Vehicle:
         vehicle = VehiclesQueries.get_vehicle_detail(vehicle_id=vehicle_id)
         vehicle.updated_by = "Isaac"
         
-        VehiclesHistoriesQueries.add_vehicle_history(data=vehicle, description=f"vehicle {vehicle.number_plate} deleted")
-        """The data deleted is stored in the history table"""
+        # VehiclesHistoriesQueries.add_vehicle_history(data=vehicle, description=f"vehicle {vehicle.number_plate} deleted")
+
         try:
             VehiclesQueries.delete_vehicle(vehicle=vehicle)
             return JSONResponse(status_code=status.HTTP_200_OK, content=f"Veículo: {vehicle.brand} - {vehicle.model} deletado com sucesso")
