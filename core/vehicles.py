@@ -61,3 +61,44 @@ class Vehicle:
         except Exception as e:
             logger.error(f"Erro geral no cadastro do veiculo: {e}")
             return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral no cadastro do veiculo: {e}")
+    
+    @classmethod    
+    def update_vehicle(cls, vehicle_id: int, new_data: Vehicles) -> None:
+        """ Update a single vehicle
+
+        Args:
+            vehicle_id (str): a ID (internal) of a vehicle from table Vehicle
+            new_data (Vehicle): A model with vehicle atributes the will change
+
+        Returns:
+            Message of success
+            
+        Exceptions:
+            400: General update error
+        """
+        validation = vehicle_data_validation(payload=new_data)
+        if not validation.get("is_valid"):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation.get("errors"))
+
+        vehicle_row = VehiclesQueries.get_vehicles_by_customer_id(vehicle_id=vehicle_id)
+        
+        columns_changed = []
+        for key, value in new_data:
+            if hasattr(vehicle_row, key) and value is not None:
+                current_value = getattr(vehicle_row, key)
+                if current_value != value:
+                    columns_changed.append(key)
+                    setattr(vehicle_row, key, value)
+
+        vehicle_row.updated_by = "Isaac"
+
+        for column in columns_changed:
+            VehicleHistoriesQueries.add_vehicle_history(data=vehicle_row, description=f"Column {column} changed")
+            
+        try:
+            VehicleQueries.update_vehicle(new_data=vehicle_row)
+            return JSONResponse(status_code=status.HTTP_200_OK, content=f"Cliente: {vehicle_row.brand} - {vehicle_row.model} atualizado com sucesso")
+        
+        except Exception as e:
+            logger.error(f"Erro geral na atualização do cliente: {e}")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral na atualização do cliente: {e}")
