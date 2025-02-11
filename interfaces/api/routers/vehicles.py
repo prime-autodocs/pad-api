@@ -55,3 +55,20 @@ async def create_vehicle(
     response = Vehicle.create_vehicle(data=data)
     return response
 
+@router.delete(
+    "/{vehicle_id}"
+)
+async def delete_vehicle(
+    vehicle_id: int
+) -> None:
+    """ Endpoint to delete a vehicle
+    
+    Args:
+        vehicle_id (int): id from table vehicles
+    
+    Returns:
+        Message of success
+    """
+    response = Vehicle.delete_vehicle(vehicle_id=vehicle_id)
+    return response
+

@@ -44,7 +44,7 @@ class VehiclesQueries():
         return vehicle
         
     @classmethod
-    def create_vehicle(cls, data):
+    def create_vehicle(cls, data: Vehicles):
         """Query to create a vehicle
 
         Args:
@@ -67,3 +67,7 @@ class VehiclesQueries():
         )
         
         db.add(vehicle)
+        
+    @classmethod
+    def delete_vehicle(cls, vehicle: Vehicles):
+        db.delete(vehicle)
