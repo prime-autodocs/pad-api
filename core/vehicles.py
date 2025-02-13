@@ -2,6 +2,7 @@ from typing import List
 from database.database import db
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException, status
+from fastapi.responses import JSONResponse
 
 from loguru import logger
 
@@ -10,6 +11,7 @@ from database.queries.vehicles import VehiclesQueries
 from database.models.vehicles import Vehicles
 from services.utils.vehicle_validation import vehicle_data_validation
 from services.utils.vehicle_data_formatter import data_formatter
+from database.queries.vehicles_history import VehiclesHistoriesQueries
 
 
 class Vehicle:
@@ -103,3 +105,26 @@ class Vehicle:
         except Exception as e:
             logger.error(f"Erro geral na atualização do cliente: {e}")
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral na atualização do cliente: {e}")
+    
+    @classmethod    
+    def delete_vehicle(cls, vehicle_id: int) -> None:
+        """ function to delete a vehicle
+        
+        Args:
+            vehicle_id (int): id from table vehicles
+        
+        Returns:
+            Message of success
+        """
+        vehicle = VehiclesQueries.get_vehicle_detail(vehicle_id=vehicle_id)
+        vehicle.updated_by = "Isaac"
+        
+        # VehiclesHistoriesQueries.add_vehicle_history(data=vehicle, description=f"vehicle {vehicle.number_plate} deleted")
+
+        try:
+            VehiclesQueries.delete_vehicle(vehicle=vehicle)
+            return JSONResponse(status_code=status.HTTP_200_OK, content=f"Veículo: {vehicle.brand} - {vehicle.model} deletado com sucesso")
+        
+        except Exception as e:
+            logger.error(f"Erro geral na exclusão do veículo: {e}")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral na exclusão do veículo: {e}")
