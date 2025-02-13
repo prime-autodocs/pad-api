@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from typing import List
 from core.vehicles import Vehicle
-from interfaces.api.schemas.vehicles import VehiclesByCustomer, VehicleCreate, VehicleDetail
+from interfaces.api.schemas.vehicles import VehiclesByCustomer, VehicleCreate, VehicleDetail, VehicleUpdate
 
 router = APIRouter()
 
@@ -55,6 +55,27 @@ async def create_vehicle(
     response = Vehicle.create_vehicle(data=data)
     return response
 
+@router.patch(
+    "/{customer_id}"
+)
+async def update_vehicle(
+    vehicle_id: int,
+    new_data: VehicleUpdate
+) -> None:
+    """Endpoint that update a vehicle in database
+
+    Args:
+        customer_id (int): ID of vehicle
+        new_data (VehicleUpdate): Receive a model data of vehicle to update vehicle
+
+    Returns:
+        Message of success
+        
+    Exceptions:
+        400: General create error
+    """
+    response = Vehicle.update_vehicle(vehicle_id=vehicle_id, new_data=new_data)
+    return response
 @router.delete(
     "/{vehicle_id}"
 )

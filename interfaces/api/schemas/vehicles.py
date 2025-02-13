@@ -46,8 +46,13 @@ class VehicleCreate(BaseModel):
     updated_at: datetime.datetime = None
     updated_by: Optional[str] = None
     
-    
-    
     class Config:
       """Configs"""
       from_attributes = True
+  
+class VehicleUpdate(VehicleCreate):
+   
+  updated_by: str = None
+   
+  class Config:
+    from_attributes = True

@@ -67,6 +67,12 @@ class VehiclesQueries():
         )
         
         db.add(vehicle)
+    
+    @classmethod
+    def update_vehicle(cls, new_data: Vehicles):
+        db.commit()
+        db.refresh(new_data)
+        db.close()
         
     @classmethod
     def delete_vehicle(cls, vehicle: Vehicles):
