@@ -9,10 +9,10 @@ app = fastapi.FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://pad-interface.vercel.app"],
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Permite GET, POST, PUT, DELETE, etc.
-    allow_headers=["*"],  # Permite todos os headers
+    allow_methods=["*"], 
+    allow_headers=["*"],  
 )
 
 ## Routers
