@@ -74,5 +74,5 @@ async def update_vehicle(
     Exceptions:
         400: General create error
     """
-    response = Vehicle.update_vehicle(customer_id=vehicle_id, new_data=new_data)
+    response = Vehicle.update_vehicle(vehicle_id=vehicle_id, new_data=new_data)
     return response

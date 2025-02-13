@@ -1,5 +1,6 @@
 from typing import List
 from database.database import db
+from fastapi.responses import JSONResponse
 from fastapi import HTTPException, status
 
 from loguru import logger
@@ -80,7 +81,7 @@ class Vehicle:
         if not validation.get("is_valid"):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation.get("errors"))
 
-        vehicle_row = VehiclesQueries.get_vehicles_by_customer_id(vehicle_id=vehicle_id)
+        vehicle_row = VehiclesQueries.get_vehicle_detail(vehicle_id=vehicle_id)
         
         columns_changed = []
         for key, value in new_data:
@@ -92,11 +93,11 @@ class Vehicle:
 
         vehicle_row.updated_by = "Isaac"
 
-        for column in columns_changed:
-            VehicleHistoriesQueries.add_vehicle_history(data=vehicle_row, description=f"Column {column} changed")
+        # for column in columns_changed:
+        #     VehicleHistoriesQueries.add_vehicle_history(data=vehicle_row, description=f"Column {column} changed")
             
         try:
-            VehicleQueries.update_vehicle(new_data=vehicle_row)
+            VehiclesQueries.update_vehicle(new_data=vehicle_row)
             return JSONResponse(status_code=status.HTTP_200_OK, content=f"Cliente: {vehicle_row.brand} - {vehicle_row.model} atualizado com sucesso")
         
         except Exception as e:
