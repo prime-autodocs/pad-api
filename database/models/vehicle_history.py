@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, TIMESTAMP, text
-from database.database import Base
+
+from database.base import Base
+
 
 class VehiclesHistory(Base):
     __tablename__ = "vehicle_history"

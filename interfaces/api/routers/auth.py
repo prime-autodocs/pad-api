@@ -3,7 +3,6 @@ from interfaces.api.schemas.auth import LoginRequest
 from core.auth import create_access_token
 from datetime import timedelta
 from core.users import Users
-
 router = APIRouter()
 
 @router.post("/login")
@@ -23,5 +22,4 @@ async def login(request: LoginRequest):
         data={"sub": request.login},
         expires_delta=timedelta(minutes=30)
     )
-
     return {"token": token}

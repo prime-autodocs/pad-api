@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, Enum, String, TIMESTAMP, text
+
 from services.enums import FuelEnum, CategoryEnum
-from database.database import Base
+from database.base import Base
+
 
 class Vehicles(Base):
     __tablename__ = "vehicles"

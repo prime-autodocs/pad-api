@@ -2,7 +2,8 @@
 from sqlalchemy import Column, Integer, String, TIMESTAMP, text
 from sqlalchemy.sql.sqltypes import Date
 
-from database.database import Base
+from database.base import Base
+
 
 class Users(Base):
     

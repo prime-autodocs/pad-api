@@ -1,7 +1,9 @@
 from sqlalchemy import Column, Integer, Enum, String, TIMESTAMP, text
 from sqlalchemy.sql.sqltypes import Date
+
 from services.enums import CivilStatusEnum, GenderEnum, CustomerTypeEnum, TaxTypeEnum
-from database.database import Base
+from database.base import Base
+
 
 class Customers(Base):
     __tablename__ = "customers"

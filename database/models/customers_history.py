@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, TIMESTAMP, text
-from database.database import Base
+
+from database.base import Base
+
 
 class CustomersHistory(Base):
     __tablename__ = "customers_history"
