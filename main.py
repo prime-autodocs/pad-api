@@ -1,7 +1,16 @@
 import argparse
 
 import uvicorn
+from fastapi import FastAPI
+
 from services.config import settings
+from interfaces.api.config import create_app
+
+
+# Instância global da aplicação FastAPI
+# (usada tanto pelo uvicorn.run quanto por comandos como `uvicorn main:app`)
+app: FastAPI = create_app()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="PrimeAutoDocs")
@@ -13,16 +22,16 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    
+
     if args.mode == "api":
         uvicorn.run(
-            "interfaces.api.config:app",
+            app,
             host=settings.API_HOST,
             port=8000,
             log_level=settings.LOG_LEVEL,
             reload=settings.RELOAD,
-            workers=1
+            workers=1,
         )
-    
+
     elif args.mode == "cli":
         print("Unauthorized")
