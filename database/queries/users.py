@@ -1,10 +1,10 @@
 from fastapi import status, HTTPException
 
 from database.models.users import Users
-from database.database import db
+from database.session import db_session
 
 
-class UsersQueries():
+class UsersQueries:
     
     table = Users
     
@@ -19,16 +19,17 @@ class UsersQueries():
         Returns:
             Model Object: User
         """
-        user = db.query(Users).filter(Users.login == login).first()
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Usuário não encontrado."
-            )
-            
-        if password != user.password:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Senha inválida."
-            )
-        return user
+        with db_session() as db:
+            user = db.query(Users).filter(Users.login == login).first()
+            if not user:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Usuário não encontrado.",
+                )
+
+            if password != user.password:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Senha inválida.",
+                )
+            return user

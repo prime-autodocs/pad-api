@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import func
 
-from database.database import db
+from database.session import db_session
 from database.models.customers import Customers
 from database.models.vehicles import Vehicles
 
@@ -14,14 +14,16 @@ class DashboardsQueries:
         """
         Retorna o total de clientes cadastrados.
         """
-        return db.query(func.count(Customers.id)).scalar() or 0
+        with db_session() as db:
+            return db.query(func.count(Customers.id)).scalar() or 0
 
     @classmethod
     def get_total_vehicles(cls) -> int:
         """
         Retorna o total de veículos cadastrados.
         """
-        return db.query(func.count(Vehicles.id)).scalar() or 0
+        with db_session() as db:
+            return db.query(func.count(Vehicles.id)).scalar() or 0
 
     @classmethod
     def get_new_customers_current_month(cls) -> int:
@@ -37,13 +39,14 @@ class DashboardsQueries:
         else:
             next_month_start = month_start.replace(month=month_start.month + 1)
 
-        return (
-            db.query(func.count(Customers.id))
-            .filter(Customers.created_at >= month_start)
-            .filter(Customers.created_at < next_month_start)
-            .scalar()
-            or 0
-        )
+        with db_session() as db:
+            return (
+                db.query(func.count(Customers.id))
+                .filter(Customers.created_at >= month_start)
+                .filter(Customers.created_at < next_month_start)
+                .scalar()
+                or 0
+            )
 
     @classmethod
     def get_services_current_month(cls) -> int:
@@ -87,12 +90,13 @@ class DashboardsQueries:
         else:
             end_date = datetime(last_year, last_month + 1, 1)
 
-        rows = (
-            db.query(Customers.created_at)
-            .filter(Customers.created_at >= start_date)
-            .filter(Customers.created_at < end_date)
-            .all()
-        )
+        with db_session() as db:
+            rows = (
+                db.query(Customers.created_at)
+                .filter(Customers.created_at >= start_date)
+                .filter(Customers.created_at < end_date)
+                .all()
+            )
 
         counts = {(y, m): 0 for (y, m) in months}
         for (created_at,) in rows:
@@ -114,7 +118,8 @@ class DashboardsQueries:
 
         Cada item do retorno é um dict: {"year": int, "count": int}
         """
-        rows = db.query(Customers.created_at).all()
+        with db_session() as db:
+            rows = db.query(Customers.created_at).all()
 
         counts = defaultdict(int)
         for (created_at,) in rows:

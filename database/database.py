@@ -1,5 +1,4 @@
 from sqlalchemy import create_engine, exc
-from sqlalchemy.orm import sessionmaker
 
 from services.config import settings
 from database.base import Base
@@ -50,6 +49,3 @@ engine = _create_engine()
 # Se não for produção, garantir que o SQLite tenha o schema criado
 if settings.ENVIRONMENT != "production":
     _init_sqlite_schema()
-
-SessionLocal = sessionmaker(bind=engine, autoflush=True, expire_on_commit=False)
-db = SessionLocal()

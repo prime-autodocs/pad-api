@@ -1,5 +1,5 @@
 from typing import List
-from database.database import db
+
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse

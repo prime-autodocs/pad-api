@@ -1,9 +1,10 @@
 from fastapi import status, HTTPException
 
 from database.models.customers import Customers
-from database.database import db
+from database.session import db_session
 
-class CustomersQueries():
+
+class CustomersQueries:
     
     table = Customers
     
@@ -14,7 +15,8 @@ class CustomersQueries():
         Returns:
             Model Object: List[Customers]
         """
-        return db.query(Customers).all()
+        with db_session() as db:
+            return db.query(Customers).all()
     
     @classmethod
     def get_customer_by_id(cls, customer_id: int):
@@ -26,13 +28,14 @@ class CustomersQueries():
         Returns:
             Model Object: Customer
         """
-        customer = db.query(Customers).filter(Customers.id == customer_id).first()
-        if not customer:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Cliente não encontrado."
-            )
-        return customer
+        with db_session() as db:
+            customer = db.query(Customers).filter(Customers.id == customer_id).first()
+            if not customer:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Cliente não encontrado.",
+                )
+            return customer
         
     @classmethod
     def get_customer_by_tax_id(cls, tax_id: str):
@@ -44,13 +47,14 @@ class CustomersQueries():
         Returns:
             Model Object: Customer
         """
-        customer = db.query(Customers).filter(Customers.tax_id == tax_id).first()
-        if not customer:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Cliente não encontrado."
-            )
-        return customer
+        with db_session() as db:
+            customer = db.query(Customers).filter(Customers.tax_id == tax_id).first()
+            if not customer:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Cliente não encontrado.",
+                )
+            return customer
     
     @classmethod
     def create_customer(cls, data: Customers):
@@ -59,28 +63,32 @@ class CustomersQueries():
         Args:
             customer (Customers): A model object of customer
         """
-        customer = Customers(
-            tax_type=data.tax_type,
-            tax_id=data.tax_id,
-            full_name=data.full_name,
-            gender=data.gender,
-            email=data.email,
-            birth_date=data.birth_date,
-            customer_type=data.customer_type,
-            civil_status=data.civil_status,
-            tel_number=data.tel_number,
-        )
-        
-        db.add(customer)
+        with db_session() as db:
+            customer = Customers(
+                tax_type=data.tax_type,
+                tax_id=data.tax_id,
+                full_name=data.full_name,
+                gender=data.gender,
+                email=data.email,
+                birth_date=data.birth_date,
+                customer_type=data.customer_type,
+                civil_status=data.civil_status,
+                tel_number=data.tel_number,
+            )
+
+            db.add(customer)
+            db.commit()
     
     @classmethod
     def update_customer(cls, new_data: Customers):
-        db.commit()
-        db.refresh(new_data)
-        db.close()
+        with db_session() as db:
+            db.merge(new_data)
+            db.commit()
         
     @classmethod
     def delete_customer(cls, customer: Customers):
-        db.delete(customer)
+        with db_session() as db:
+            db.delete(customer)
+            db.commit()
 
             
