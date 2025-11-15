@@ -15,6 +15,7 @@ class CivilStatusEnum(enum.Enum):
     married = "married"
     divorced = "divorced"
     widowed = "widowed"
+    stable_union = "stable_union"
 
 @enum.unique
 class GenderEnum(enum.Enum):

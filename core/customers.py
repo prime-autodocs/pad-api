@@ -8,9 +8,14 @@ from loguru import logger
 from database.models.customers import Customers
 from database.queries.customers import CustomersQueries
 from database.queries.customers_history import CustomerHistoriesQueries
-from interfaces.api.schemas.customers import CustomersBase, CustomerFinder
+from interfaces.api.schemas.customers import (
+    CustomersBase,
+    CustomerFinder,
+    CustomerCreateWithDetails,
+)
 from services.utils.customer_validation import customer_data_validation
 from services.utils.customer_data_formatter import data_formatter
+
 
 class Customer:
     
@@ -38,7 +43,7 @@ class Customer:
         return customer
     
     @classmethod
-    def create_customer(cls, data: Customers) -> None:
+    def create_customer(cls, data: CustomerCreateWithDetails) -> None:
         """ Create a single customer 
 
         Args:
@@ -50,14 +55,38 @@ class Customer:
         Exceptions:
             400: General create error
         """
-        validation = customer_data_validation(payload=data)
+        customer = CustomersQueries.get_customer_by_tax_id(tax_id=data.tax_id)
+        if customer is not None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cliente já cadastrado.")
+        
+        # Mapeia os dados de entrada (Pydantic) para o model Customers
+        customer_model = Customers(
+            tax_type=data.tax_type,
+            tax_id=data.tax_id,
+            full_name=data.full_name,
+            gender=data.gender,
+            email=data.email,
+            birth_date=data.birth_date,
+            customer_type=data.customer_type,
+            civil_status=data.civil_status,
+            tel_number=data.tel_number,
+        )
+
+        validation = customer_data_validation(payload=customer_model)
         if not validation.get("is_valid"):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation.get("errors"))
-        data = data_formatter(payload=data)
+        customer_model = data_formatter(payload=customer_model)
 
         try:
-            CustomersQueries.create_customer(data=data)
-            return JSONResponse(status_code=status.HTTP_200_OK, content=f"Cliente: {data.tax_id} - {data.full_name} criado com sucesso")
+            CustomersQueries.create_customer(
+                customer=customer_model,
+                address=data.address,
+                documents=data.documents,
+            )
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content=f"Cliente: {customer_model.tax_id} - {customer_model.full_name} criado com sucesso",
+            )
 
         except Exception as e:
             logger.error(f"Erro geral no cadastro do cliente: {e}")

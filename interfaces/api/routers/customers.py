@@ -2,7 +2,12 @@ from fastapi import APIRouter
 from typing import List
 
 from core.customers import Customer
-from interfaces.api.schemas.customers import CustomersBase, CustomerCreate, CustomerUpdate, CustomerFinder
+from interfaces.api.schemas.customers import (
+    CustomersBase,
+    CustomerCreateWithDetails,
+    CustomerUpdate,
+    CustomerFinder,
+)
 
 router = APIRouter()
 
@@ -37,12 +42,12 @@ async def get_customer_by_id(customer_id: int) -> CustomersBase:
     "/"
 )
 async def create_customer(
-    data: CustomerCreate
+    data: CustomerCreateWithDetails
 ) -> None:
     """Endpoint that create a customer in database
 
     Args:
-        data (CustomerCreate): Receive a model data of customer to create customer
+        data (CustomerCreateWithDetails): Receive a model data of customer to create customer
 
     Returns:
         Message of success

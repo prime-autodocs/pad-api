@@ -6,7 +6,15 @@ from database.database import engine
 
 
 # Session factory
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# expire_on_commit=False evita que os objetos sejam "expirados" após o commit,
+# o que permitiria que, fora da sessão, o acesso aos atributos dispare um
+# refresh automático e gere erros de "Instance is not bound to a Session".
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    expire_on_commit=False,
+    bind=engine,
+)
 
 
 def get_db():

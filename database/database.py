@@ -40,6 +40,8 @@ def _init_sqlite_schema():
     from database.models.vehicle_history import VehiclesHistory  # noqa: F401
     from database.models.users import Users  # noqa: F401
     from database.models.feature_flags import FeatureFlags  # noqa: F401
+    from database.models.documents import Documents  # noqa: F401
+    from database.models.address import Address  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
 

@@ -4,10 +4,8 @@ def data_formatter(payload: Customers) -> Customers:
 
     if payload.full_name != payload.full_name.title():
         payload.full_name = payload.full_name.title()
-
-    if payload.email != payload.email.lower():
+        
+    if payload.email and payload.email != payload.email.lower():
         payload.email = payload.email.lower()
-
-
 
     return payload

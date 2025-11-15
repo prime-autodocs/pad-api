@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     if args.mode == "api":
         uvicorn.run(
-            app,
+            "main:app",
             host=settings.API_HOST,
             port=8000,
             log_level=settings.LOG_LEVEL,
