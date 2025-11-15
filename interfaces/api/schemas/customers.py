@@ -88,3 +88,9 @@ class CustomerFinder(BaseModel):
    
    class Config:
       from_attributes = True
+
+
+class CustomerAvailable(BaseModel):
+   id: int
+   name: str
+   tax_id: str

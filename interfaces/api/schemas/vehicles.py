@@ -8,6 +8,7 @@ class VehiclesByCustomer(BaseModel):
     brand: str = None
     model: str = None
     number_plate: str = None
+    last_legalization_year: int | None = None
     
     class Config:
       """Configs"""

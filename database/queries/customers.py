@@ -7,6 +7,7 @@ from database.models.address import Address
 from database.models.documents import Documents
 from database.session import db_session
 from interfaces.api.schemas.customers import AddressCreate, DocumentsCreate
+from services.enums import TaxTypeEnum
 
 
 class CustomersQueries:
@@ -22,6 +23,50 @@ class CustomersQueries:
         """
         with db_session() as db:
             return db.query(Customers).all()
+
+    @classmethod
+    def get_available_customers(
+        cls,
+        search: Optional[str] = None,
+        field_selected: Optional[str] = None,
+    ):
+        """
+        Retorna clientes ordenados alfabeticamente pelo nome,
+        aplicando filtros conforme `search` e `field_selected`.
+
+        - field_selected = "name": filtra por nome
+        - field_selected = "cpf": filtra apenas clientes com tax_type CPF
+        - field_selected = "cnpj": filtra apenas clientes com tax_type CNPJ
+        """
+        with db_session() as db:
+            query = db.query(Customers)
+
+            if search:
+                like_pattern = f"%{search}%"
+
+                if field_selected == "name":
+                    query = query.filter(Customers.full_name.ilike(like_pattern))
+
+                elif field_selected == "cpf":
+                    query = query.filter(
+                        Customers.tax_type == TaxTypeEnum.CPF,
+                        Customers.tax_id.ilike(like_pattern),
+                    )
+
+                elif field_selected == "cnpj":
+                    query = query.filter(
+                        Customers.tax_type == TaxTypeEnum.CNPJ,
+                        Customers.tax_id.ilike(like_pattern),
+                    )
+
+                else:
+                    # fallback: busca por nome OU tax_id
+                    query = query.filter(
+                        Customers.full_name.ilike(like_pattern)
+                        | Customers.tax_id.ilike(like_pattern)
+                    )
+
+            return query.order_by(Customers.full_name.asc()).all()
 
     @classmethod
     def get_customer_by_id(cls, customer_id: int):

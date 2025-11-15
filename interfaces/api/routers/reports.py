@@ -7,6 +7,7 @@ from interfaces.api.schemas.reports import (
     CustomerVehiclesReportResponse,
     CustomerDetailsResponse,
 )
+from interfaces.api.schemas.vehicles import VehicleDetail
 from services.enums import CustomerTypeEnum
 
 
@@ -31,7 +32,6 @@ async def list_customers_vehicles(
     - `filter_by`: filtra pelo tipo de cliente (CustomerTypeEnum)
     - ordenado alfabeticamente pelo nome do cliente
     """
-    time.sleep(5)
     return Reports.list_customers_vehicles(search=search, filter_by=filter_by)
 
 
@@ -42,4 +42,12 @@ async def get_customer_details(customer_id: int) -> CustomerDetailsResponse:
     para o `customer_id` informado.
     """
     return Reports.get_customer_details(customer_id=customer_id)
+
+
+@router.get("/vehicle-details/{vehicle_id}", response_model=VehicleDetail)
+async def get_vehicle_details(vehicle_id: int) -> VehicleDetail:
+    """
+    Retorna o detalhe de um veículo específico para relatórios.
+    """
+    return Reports.get_vehicle_details(vehicle_id=vehicle_id)
 

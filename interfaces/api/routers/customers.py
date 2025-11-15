@@ -7,6 +7,7 @@ from interfaces.api.schemas.customers import (
     CustomerCreateWithDetails,
     CustomerUpdate,
     CustomerFinder,
+    CustomerAvailable,
 )
 
 router = APIRouter()
@@ -113,3 +114,23 @@ async def get_customer_by_tax_id(
     """
     response = Customer.get_customer_by_tax_id(tax_id=tax_id)
     return response
+
+
+@router.get(
+    "/available-customers/",
+)
+async def get_available_customers(
+    search: str | None = None,
+    field_selected: str | None = None,
+) -> List[CustomerAvailable]:
+    """
+    Endpoint que retorna clientes disponíveis para seleção
+    (nome e CPF/CNPJ), ordenados alfabeticamente.
+
+    - field_selected: "name", "cpf" ou "cnpj"
+    - search: texto para busca (LIKE) conforme o campo selecionado
+    """
+    return Customer.get_available_customers(
+        search=search,
+        field_selected=field_selected,
+    )

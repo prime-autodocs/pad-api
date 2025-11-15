@@ -30,8 +30,8 @@ class FuelEnum(enum.Enum):
     alchool = 'alchool'
     gas = 'gas'
     gasoline = 'gasoline'
-    alchool_gas = 'alchool/gas'
-    gasoline_gas = 'gasoline/gas'
+    alchool_gas = 'alchool_gas'
+    gasoline_gas = 'gasoline_gas'
     diesel = 'diesel'
 
 @enum.unique

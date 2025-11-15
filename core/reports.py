@@ -7,7 +7,9 @@ from interfaces.api.schemas.reports import (
     CustomerVehiclesReportResponse,
     CustomerDetailsResponse,
 )
+from interfaces.api.schemas.vehicles import VehicleDetail
 from database.queries.reports import ReportsQueries
+from database.queries.vehicles import VehiclesQueries
 from services.enums import CustomerTypeEnum
 
 
@@ -42,4 +44,17 @@ class Reports:
                 detail="Cliente não encontrado.",
             )
         return details
+
+    @classmethod
+    def get_vehicle_details(cls, vehicle_id: int) -> VehicleDetail:
+        """
+        Retorna o detalhe de um veículo específico para relatórios.
+        """
+        vehicle = VehiclesQueries.get_vehicle_detail(vehicle_id=vehicle_id)
+        if vehicle is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Veículo não encontrado.",
+            )
+        return vehicle
 

@@ -12,6 +12,7 @@ from interfaces.api.schemas.customers import (
     CustomersBase,
     CustomerFinder,
     CustomerCreateWithDetails,
+    CustomerAvailable,
 )
 from services.utils.customer_validation import customer_data_validation
 from services.utils.customer_data_formatter import data_formatter
@@ -28,6 +29,26 @@ class Customer:
         """
         customers = CustomersQueries.get_all_customers()
         return customers
+
+    @classmethod
+    def get_available_customers(
+        cls,
+        search: str | None = None,
+        field_selected: str | None = None,
+    ) -> List[CustomerAvailable]:
+        """
+        Retorna clientes disponíveis para seleção em cadastros de veículo,
+        contendo apenas nome e CPF/CNPJ, ordenados alfabeticamente,
+        com filtros por nome/CPF/CNPJ conforme parâmetros.
+        """
+        customers = CustomersQueries.get_available_customers(
+            search=search,
+            field_selected=field_selected,
+        )
+        return [
+            CustomerAvailable(id=c.id, name=c.full_name, tax_id=c.tax_id)
+            for c in customers
+        ]
 
     @classmethod
     def get_customer_by_id(cls, customer_id: int) -> CustomersBase:

@@ -2,6 +2,7 @@ from fastapi import status, HTTPException
 
 from database.session import db_session
 from database.models.vehicles import Vehicles
+from services.enums import CategoryEnum, FuelEnum
 
 
 class VehiclesQueries:
@@ -24,11 +25,7 @@ class VehiclesQueries:
                 .filter(Vehicles.customer_id == customer_id)
                 .all()
             )
-            if not vehicle:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Cliente não encontrado.",
-                )
+
             return vehicle
 
     @classmethod
@@ -43,11 +40,6 @@ class VehiclesQueries:
         """
         with db_session() as db:
             vehicle = db.query(Vehicles).filter(Vehicles.id == vehicle_id).first()
-            if not vehicle:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Veículo não encontrado.",
-                )
             return vehicle
 
     @classmethod
@@ -58,6 +50,37 @@ class VehiclesQueries:
             data (Model): a model with vehicle atributes
         """
         with db_session() as db:
+            # Normaliza categoria para o enum/campo correto
+            category_value = data.category
+            if isinstance(category_value, str):
+                value_lower = category_value.lower()
+                if value_lower == "particular":
+                    category_value = CategoryEnum.particular
+                elif value_lower == "rent":
+                    category_value = CategoryEnum.rent
+            if isinstance(category_value, CategoryEnum):
+                category_value = category_value.value
+
+            # Normaliza combustível para o enum/campo correto
+            fuel_value = data.fuel
+            if isinstance(fuel_value, str):
+                v = fuel_value.lower().replace("ó", "o").replace("ô", "o").replace("ã", "a")
+
+                if v in ("alcool", "alchool", "álcool"):
+                    fuel_value = FuelEnum.alchool
+                elif v in ("gasolina", "gasoline"):
+                    fuel_value = FuelEnum.gasoline
+                elif v in ("gas", "gnv"):
+                    fuel_value = FuelEnum.gas
+                elif v in ("gasolina/alcool", "alcool/gasolina", "gasolina/álcool", "álcool/gasolina"):
+                    fuel_value = FuelEnum.alchool_gas
+                elif v in ("gasolina/gas", "gas/gasolina"):
+                    fuel_value = FuelEnum.gasoline_gas
+                elif v == "diesel":
+                    fuel_value = FuelEnum.diesel
+            if isinstance(fuel_value, FuelEnum):
+                fuel_value = fuel_value.value
+
             vehicle = Vehicles(
                 customer_id=data.customer_id,
                 brand=data.brand,
@@ -67,9 +90,9 @@ class VehiclesQueries:
                 national_registry=data.national_registry,
                 year_fabric=data.year_fabric,
                 year_model=data.year_model,
-                fuel=data.fuel,
+                fuel=fuel_value,
                 color=data.color,
-                category=data.category,
+                category=category_value,
                 certification_number=data.certification_number,
                 crlv_image=data.crlv_image,
             )

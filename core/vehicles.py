@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 
 from loguru import logger
 
-from interfaces.api.schemas.vehicles import VehiclesByCustomer, VehicleDetail
+from interfaces.api.schemas.vehicles import VehiclesByCustomer
 from database.queries.vehicles import VehiclesQueries
 from database.models.vehicles import Vehicles
 from services.utils.vehicle_validation import vehicle_data_validation
@@ -26,21 +26,13 @@ class Vehicle:
         Returns:
             List[VehiclesByCustomer]: a list of all vehicles from a customer
         """
-        vehicle = VehiclesQueries.get_vehicles_by_customer_id(customer_id=customer_id)
-        return vehicle
-    
-    @classmethod
-    def get_vehicle_detail(cls, vehicle_id: int) -> VehicleDetail:
-        """ function to get a vehicle detail
-        
-        Args:
-            vehicle_id (int): id from table vehicles
-            
-        Returns:
-            VehicleDetail: a vehicle detail
-        """
-        vehicle = VehiclesQueries.get_vehicle_detail(vehicle_id=vehicle_id)
-        return vehicle
+        vehicles = VehiclesQueries.get_vehicles_by_customer_id(customer_id=customer_id)
+
+        # Adiciona campo calculado (por enquanto hardcoded)
+        for v in vehicles:
+            setattr(v, "last_legalization_year", 2025)
+
+        return vehicles
 
     @classmethod
     def create_vehicle(cls, data: Vehicles) -> None:
@@ -54,16 +46,26 @@ class Vehicle:
         """
         validation = vehicle_data_validation(payload=data)
         if not validation.get("is_valid"):
-            return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation.get("errors"))
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=validation.get("errors"),
+            )
+
         data = data_formatter(payload=data)
 
         try:
             VehiclesQueries.create_vehicle(data=data)
-            return HTTPException(status_code=status.HTTP_200_OK, detail=f"Veículo: {data.number_plate} - {data.brand} {data.model} criado com sucesso")
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content=f"Veículo: {data.number_plate} - {data.brand} {data.model} criado com sucesso",
+            )
 
         except Exception as e:
             logger.error(f"Erro geral no cadastro do veiculo: {e}")
-            return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral no cadastro do veiculo: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Erro geral no cadastro do veiculo: {e}",
+            )
     
     @classmethod    
     def update_vehicle(cls, vehicle_id: int, new_data: Vehicles) -> None:
