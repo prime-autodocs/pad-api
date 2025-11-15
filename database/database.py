@@ -9,15 +9,15 @@ def _create_engine():
     """
     Cria o engine do SQLAlchemy.
 
-    - Em produção (ENVIRONMENT=production): usa PRIME_DB_URL (ex.: MySQL).
+    - Em produção (ENVIRONMENT=production): usa POSTGRES_URL (ex.: MySQL).
     - Fora de produção: usa um banco SQLite local definido em SQLITE_DB_URL.
     """
     if settings.ENVIRONMENT == "production":
-        if not settings.PRIME_DB_URL:
-            raise RuntimeError("PRIME_DB_URL não está definido para o ambiente de produção.")
+        if not settings.POSTGRES_URL:
+            raise RuntimeError("POSTGRES_URL não está definido para o ambiente de produção.")
 
         return create_engine(
-            settings.PRIME_DB_URL,
+            settings.POSTGRES_URL,
             isolation_level="AUTOCOMMIT",
         )
 

@@ -12,11 +12,11 @@ class Settings:
     ENVIRONMENT: str = os.environ.get("ENVIRONMENT", "development")
 
     # DB Config (production)
-    PRIME_DB_URL: str = os.environ.get("PRIME_DB_URL")
-    DB_NAME: str = os.environ.get("DB_NAME")
-    DB_USER: str = os.environ.get("DB_USER")
-    DB_PWD: str = os.environ.get("DB_PWD")
-    DB_HOST: str = os.environ.get("DB_HOST")
+    POSTGRES_URL: str = os.environ.get("POSTGRES_URL")
+    POSTGRES_DATABASE: str = os.environ.get("POSTGRES_DATABASE")
+    POSTGRES_USER: str = os.environ.get("POSTGRES_USER")
+    POSTGRES_PASSWORD: str = os.environ.get("POSTGRES_PASSWORD")
+    POSTGRES_HOST: str = os.environ.get("POSTGRES_HOST")
     DB_PORT: str = os.environ.get("DB_PORT")
 
     # DB Config (local SQLite)
