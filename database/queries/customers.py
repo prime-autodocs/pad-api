@@ -5,6 +5,7 @@ from fastapi import status, HTTPException
 from database.models.customers import Customers
 from database.models.address import Address
 from database.models.documents import Documents
+from database.models.vehicles import Vehicles
 from database.session import db_session
 from interfaces.api.schemas.customers import AddressCreate, DocumentsCreate
 from services.enums import TaxTypeEnum
@@ -148,14 +149,83 @@ class CustomersQueries:
             db.commit()
 
     @classmethod
-    def update_customer(cls, new_data: Customers):
+    def update_customer(
+        cls,
+        new_data: Customers,
+        address: Optional[AddressCreate],
+        documents: Optional[DocumentsCreate],
+    ):
+        """
+        Atualiza o cliente e, opcionalmente, seu endereço/documentos.
+
+        Somente campos presentes nos payloads de address/documents são
+        atualizados; os demais permanecem inalterados.
+        """
         with db_session() as db:
+            # Atualiza dados básicos do cliente
             db.merge(new_data)
+
+            # Atualiza/insere endereço, se enviado
+            if address is not None:
+                addr_row = (
+                    db.query(Address)
+                    .filter(Address.customer_id == new_data.id)
+                    .first()
+                )
+                if addr_row is None:
+                    addr_row = Address(customer_id=new_data.id)
+                    db.add(addr_row)
+
+                for field in (
+                    "address",
+                    "number",
+                    "complement",
+                    "neighborhood",
+                    "city",
+                    "state",
+                    "zip_code",
+                ):
+                    value = getattr(address, field, None)
+                    if value is not None:
+                        setattr(addr_row, field, value)
+
+            # Atualiza/insere documentos, se enviados
+            if documents is not None:
+                doc_row = (
+                    db.query(Documents)
+                    .filter(Documents.customer_id == new_data.id)
+                    .first()
+                )
+                if doc_row is None:
+                    doc_row = Documents(customer_id=new_data.id)
+                    db.add(doc_row)
+
+                for field in (
+                    "identity_number",
+                    "identity_org",
+                    "identity_issued_at",
+                    "identity_local",
+                    "driver_license_number",
+                    "driver_license_expiration",
+                    "driver_license_image",
+                    "smtr_permission_number",
+                    "smtr_permission_image",
+                    "smtr_ratr_number",
+                ):
+                    value = getattr(documents, field, None)
+                    if value is not None:
+                        setattr(doc_row, field, value)
+
             db.commit()
 
     @classmethod
     def delete_customer(cls, customer: Customers):
         with db_session() as db:
+            # Remove dependências (documents, address, vehicles) antes de deletar o cliente
+            db.query(Documents).filter(Documents.customer_id == customer.id).delete()
+            db.query(Address).filter(Address.customer_id == customer.id).delete()
+            db.query(Vehicles).filter(Vehicles.customer_id == customer.id).delete()
+
             db.delete(customer)
             db.commit()
 

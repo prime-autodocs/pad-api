@@ -1,3 +1,4 @@
+"""Main file"""
 import argparse
 
 import uvicorn

@@ -1,3 +1,4 @@
+"""Queries para relatórios."""
 from typing import List, Optional
 
 from sqlalchemy import func, or_
@@ -10,11 +11,13 @@ from database.models.documents import Documents
 from interfaces.api.schemas.reports import (
     CustomerVehiclesReportItem,
     CustomerDetailsResponse,
+    VehicleDetail,
 )
-from services.enums import CustomerTypeEnum
+from services.enums import CustomerTypeEnum, FuelEnum
 
 
 class ReportsQueries:
+    """Queries para relatórios."""
     @classmethod
     def get_customers_vehicles_report(
         cls,
@@ -116,4 +119,11 @@ class ReportsQueries:
             response.documents = documents
             return response
 
-
+    @classmethod
+    def get_vehicle_detail(cls, vehicle_id: int) -> Optional[VehicleDetail]:
+        """Retorna o detalhe de um veículo específico para relatórios."""
+        with db_session() as db:
+            vehicle = db.query(Vehicles).filter(Vehicles.id == vehicle_id).first()
+            vehicle.fuel = vehicle.fuel.value
+            
+            return vehicle if vehicle else None

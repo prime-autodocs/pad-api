@@ -6,10 +6,9 @@ from interfaces.api.schemas.reports import (
     CustomerVehiclesReportItem,
     CustomerVehiclesReportResponse,
     CustomerDetailsResponse,
+    VehicleDetail,
 )
-from interfaces.api.schemas.vehicles import VehicleDetail
 from database.queries.reports import ReportsQueries
-from database.queries.vehicles import VehiclesQueries
 from services.enums import CustomerTypeEnum
 
 
@@ -50,11 +49,22 @@ class Reports:
         """
         Retorna o detalhe de um veículo específico para relatórios.
         """
-        vehicle = VehiclesQueries.get_vehicle_detail(vehicle_id=vehicle_id)
+        vehicle = ReportsQueries.get_vehicle_detail(vehicle_id=vehicle_id)
         if vehicle is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Veículo não encontrado.",
             )
+            
+        fuel_map = {
+            'gas': "Gás",
+            'alchool': "Álcool",
+            'gasoline': "Gasolina",
+            'alchool_gas': "Álcool/Gasolina",
+            'gasoline_gas': "Gasolina/Gas",
+            'diesel': "Diesel",
+            'electric': "Elétrico",
+        }
+        vehicle.fuel = fuel_map.get(vehicle.fuel)
         return vehicle
 

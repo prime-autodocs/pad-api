@@ -31,5 +31,8 @@ class Settings:
     LOG_LEVEL: str = os.environ.get("LOG_LEVEL", "debug")
     RELOAD: str = os.environ.get("RELOAD")
 
+    # Vercel Blob Config
+    BLOB_READ_WRITE_TOKEN: str = os.environ.get("BLOB_READ_WRITE_TOKEN")
+
 
 settings = Settings()

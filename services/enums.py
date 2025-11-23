@@ -1,28 +1,27 @@
 import enum
-from typing import Optional
 
 @enum.unique
 class CustomerTypeEnum(enum.Enum):
     """All type of customers"""
     DETRAN = "DETRAN"
     SMTR = "SMTR"
-    both = "both"
+    both = "Ambos"
 
 @enum.unique
 class CivilStatusEnum(enum.Enum):
     """Civil status of the customer"""
-    single = "single"
-    married = "married"
-    divorced = "divorced"
-    widowed = "widowed"
-    stable_union = "stable_union"
+    single = "Solteiro(a)"
+    married = "Casado(a)"
+    divorced = "Divorciado(a)"
+    widowed = "Viúvo(a)"
+    stable_union = "União Estável"
 
 @enum.unique
 class GenderEnum(enum.Enum):
     """Gender of the customer"""
-    male = "male"
-    female = "female"
-    others = "others"
+    male = "Masculino"
+    female = "Feminino"
+    others = "Outros"
     
 @enum.unique
 class FuelEnum(enum.Enum):
@@ -33,6 +32,7 @@ class FuelEnum(enum.Enum):
     alchool_gas = 'alchool_gas'
     gasoline_gas = 'gasoline_gas'
     diesel = 'diesel'
+    electric = 'electric'
 
 @enum.unique
 class TaxTypeEnum(enum.Enum):
@@ -43,5 +43,5 @@ class TaxTypeEnum(enum.Enum):
 @enum.unique
 class CategoryEnum(enum.Enum):
     """Type of vehicle category"""
-    rent = 'rent'
-    particular = 'particular'
+    aluguel = 'Aluguel'
+    particular = 'Particular'

@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+"""Routers for vehicles"""
 from typing import List
+from fastapi import APIRouter
 from core.vehicles import Vehicle
 from interfaces.api.schemas.vehicles import VehiclesByCustomer, VehicleCreate, VehicleUpdate
 
@@ -61,6 +62,7 @@ async def update_vehicle(
     """
     response = Vehicle.update_vehicle(vehicle_id=vehicle_id, new_data=new_data)
     return response
+
 @router.delete(
     "/{vehicle_id}"
 )

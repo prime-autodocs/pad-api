@@ -1,6 +1,6 @@
-from fastapi import APIRouter
+"""Customers router"""
 from typing import List
-
+from fastapi import APIRouter
 from core.customers import Customer
 from interfaces.api.schemas.customers import (
     CustomersBase,

@@ -7,6 +7,7 @@ from services.enums import GenderEnum, CivilStatusEnum, CustomerTypeEnum, TaxTyp
 
 
 class CustomersBase(BaseModel):
+   """Customers base"""
    id: int = None
    tax_type: TaxTypeEnum
    tax_id: str = None
@@ -27,6 +28,7 @@ class CustomersBase(BaseModel):
 
 
 class CustomerCreate(BaseModel):
+   """Customer create"""
    tax_type: TaxTypeEnum | None = None
    tax_id: str | None = None
    full_name: str | None = None
@@ -36,12 +38,15 @@ class CustomerCreate(BaseModel):
    customer_type: CustomerTypeEnum | None = None
    civil_status: CivilStatusEnum | None = None
    tel_number: str | None = None
+   customer_image: str | None = None
 
    class Config:
+      """Configs"""
       from_attributes = True
 
 
 class AddressCreate(BaseModel):
+   """Address create"""
    address: str | None = None
    number: str | None = None
    complement: str | None = None
@@ -51,10 +56,12 @@ class AddressCreate(BaseModel):
    zip_code: str | None = None
 
    class Config:
+      """Configs"""
       from_attributes = True
 
 
 class DocumentsCreate(BaseModel):
+   """Documents create"""
    identity_number: str | None = None
    identity_org: str | None = None
    identity_issued_at: datetime.date | None = None
@@ -67,30 +74,42 @@ class DocumentsCreate(BaseModel):
    smtr_ratr_number: str | None = None
 
    class Config:
+      """Configs"""
       from_attributes = True
 
 
 class CustomerCreateWithDetails(CustomerCreate):
+   """Customer create with details"""
    address: AddressCreate | None = None
    documents: DocumentsCreate | None = None
 
 class CustomerUpdate(CustomerCreate):
-   
-   updated_by: str = None
+   """Customer update"""
+   address: AddressCreate | None = None
+   documents: DocumentsCreate | None = None
+   updated_by: str | None = None
    
    class Config:
+      """Configs"""
       from_attributes = True
       
 class CustomerFinder(BaseModel):
+   """Customer finder"""
    full_name: str = None
    tax_id: str = None
    tel_number: str = None
    
    class Config:
+      """Configs"""
       from_attributes = True
 
 
 class CustomerAvailable(BaseModel):
-   id: int
-   name: str
-   tax_id: str
+  """Customer available"""
+  id: int = None
+  name: str = None
+  tax_id: str = None
+
+  class Config:
+     """Configs"""
+     from_attributes = True

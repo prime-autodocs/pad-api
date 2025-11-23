@@ -1,3 +1,4 @@
+"""Customers model"""
 from sqlalchemy import Column, Integer, Enum, String, TIMESTAMP, text
 from sqlalchemy.sql.sqltypes import Date
 
@@ -6,6 +7,7 @@ from database.base import Base
 
 
 class Customers(Base):
+    """Customers model"""
     __tablename__ = "customers"
 
     id = Column("id", Integer, primary_key=True, index=True)
@@ -18,6 +20,17 @@ class Customers(Base):
     customer_type = Column("customer_type", Enum(CustomerTypeEnum), nullable=False)
     civil_status = Column("civil_status", Enum(CivilStatusEnum), nullable=False)
     tel_number = Column("tel_number", String, nullable=False)
-    created_at = Column("created_at", TIMESTAMP(timezone=True), server_default=text("CURRENT_TIMESTAMP"), nullable=False)
-    updated_at = Column("updated_at", TIMESTAMP(timezone=True), server_default=text("CURRENT_TIMESTAMP"), nullable=False)
+    created_at = Column(
+        "created_at",
+        TIMESTAMP(timezone=True),
+        server_default=text("CURRENT_TIMESTAMP"),
+        nullable=False,
+    )
+    updated_at = Column(
+        "updated_at",
+        TIMESTAMP(timezone=True),
+        server_default=text("CURRENT_TIMESTAMP"),
+        nullable=False,
+    )
     updated_by = Column("updated_by", String(255))
+    customer_image = Column("customer_image", String(255))

@@ -1,7 +1,7 @@
-import json
+"""Core for customers"""
+from typing import List
 from fastapi import status, HTTPException
 from fastapi.responses import JSONResponse
-from typing import List
 
 from loguru import logger
 
@@ -12,14 +12,16 @@ from interfaces.api.schemas.customers import (
     CustomersBase,
     CustomerFinder,
     CustomerCreateWithDetails,
+    CustomerUpdate,
     CustomerAvailable,
 )
 from services.utils.customer_validation import customer_data_validation
 from services.utils.customer_data_formatter import data_formatter
+from services.utils.vercel_blob import VercelBlob
 
 
 class Customer:
-    
+    """Class for customers"""
     @classmethod
     def get_all_customers(cls) -> List[CustomersBase]:
         """ Get all customers 
@@ -62,7 +64,7 @@ class Customer:
         """
         customer = CustomersQueries.get_customer_by_id(customer_id=customer_id)
         return customer
-    
+
     @classmethod
     def create_customer(cls, data: CustomerCreateWithDetails) -> None:
         """ Create a single customer 
@@ -78,8 +80,19 @@ class Customer:
         """
         customer = CustomersQueries.get_customer_by_tax_id(tax_id=data.tax_id)
         if customer is not None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cliente já cadastrado.")
-        
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cliente já cadastrado.",
+            )
+
+        if data.customer_image:
+            customer_image_url = VercelBlob.upload_with_delete(
+                image_base64=data.customer_image,
+                image_name=f"customer_photo_{data.tax_id}.png",
+            )
+        else:
+            customer_image_url = None
+
         # Mapeia os dados de entrada (Pydantic) para o model Customers
         customer_model = Customers(
             tax_type=data.tax_type,
@@ -91,11 +104,15 @@ class Customer:
             customer_type=data.customer_type,
             civil_status=data.civil_status,
             tel_number=data.tel_number,
+            customer_image=customer_image_url,
         )
 
         validation = customer_data_validation(payload=customer_model)
         if not validation.get("is_valid"):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation.get("errors"))
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=validation.get("errors"),
+            )
         customer_model = data_formatter(payload=customer_model)
 
         try:
@@ -111,10 +128,12 @@ class Customer:
 
         except Exception as e:
             logger.error(f"Erro geral no cadastro do cliente: {e}")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral no cadastro do cliente: {e}")
-
-    @classmethod    
-    def update_customer(cls, customer_id: int, new_data: Customers) -> None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Erro geral no cadastro do cliente: {e}",
+            ) from e
+    @classmethod
+    def update_customer(cls, customer_id: int, new_data: CustomerUpdate) -> None:
         """ Update a single customer
 
         Args:
@@ -127,40 +146,74 @@ class Customer:
         Exceptions:
             400: General update error
         """
-        validation = customer_data_validation(payload=new_data)
-        if not validation.get("is_valid"):
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation.get("errors"))
-
         customer_row = CustomersQueries.get_customer_by_id(customer_id=customer_id)
-        
+
+        # Aplica apenas campos enviados no payload (exclude_unset=True)
+        payload_dict = new_data.model_dump(exclude_unset=True)
+        if new_data.customer_image:
+            new_data.customer_image = VercelBlob.upload_with_delete(
+                image_base64=new_data.customer_image, 
+                image_name=f"customer_photo_{customer_row.tax_id}.png",
+            )
+            new_image = True
+        else:
+            new_data.customer_image = customer_row.customer_image
+            new_image = False
         columns_changed = []
-        for key, value in new_data:
+        for key, value in payload_dict.items():
+            # Campos de address/documents são tratados separadamente
+            if key in {"address", "documents", "updated_by"}:
+                continue
+
             if hasattr(customer_row, key) and value is not None:
                 current_value = getattr(customer_row, key)
                 if current_value != value:
                     columns_changed.append(key)
                     setattr(customer_row, key, value)
+                    
+        if new_image:
+            customer_row.customer_image = new_data.customer_image
 
-        customer_row.updated_by = "Lucas"
+        customer_row.updated_by = new_data.updated_by or "Lucas"
 
-        for column in columns_changed:
-            CustomerHistoriesQueries.add_customer_history(data=customer_row, description=f"Column {column} changed")
-            
+        # Validação após aplicação das mudanças
+        validation = customer_data_validation(payload=customer_row)
+        if not validation.get("is_valid"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=validation.get("errors"),
+            )
+
+        # TODO: reativar histórico de alterações se necessário
+        # for column in columns_changed:
+        #     CustomerHistoriesQueries.add_customer_history(
+        #         data=customer_row, description=f"Column {column} changed"
+        #     )
+
         try:
-            CustomersQueries.update_customer(new_data=customer_row)
-            return JSONResponse(status_code=status.HTTP_200_OK, content=f"Cliente: {customer_row.tax_id} - {customer_row.full_name} atualizado com sucesso")
-        
+            CustomersQueries.update_customer(
+                new_data=customer_row,
+                address=new_data.address,
+                documents=new_data.documents,
+            )
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content=f"Cliente: {customer_row.tax_id} - {customer_row.full_name} atualizado com sucesso",
+            )
+
         except Exception as e:
             logger.error(f"Erro geral na atualização do cliente: {e}")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral na atualização do cliente: {e}")
-            
-        
-    @classmethod    
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Erro geral na atualização do cliente: {e}",
+            ) from e
+
+    @classmethod
     def delete_customer(cls, customer_id: int) -> None:
         """ Delete a single customer
 
         Args:
-            tax_id (str): 11 or 14 numbers for CPF or CNPJ
+            customer_id (int): ID of customer
 
         Returns:
             Message of success
@@ -169,27 +222,33 @@ class Customer:
             400: General delete error
         """
         customer = CustomersQueries.get_customer_by_id(customer_id=customer_id)
-        customer.updated_by = "Lucas"
-        
-        CustomerHistoriesQueries.add_customer_history(data=customer, description=f"customer {customer.tax_id} deleted")
-       
         try:
             CustomersQueries.delete_customer(customer=customer)
-            return JSONResponse(status_code=status.HTTP_200_OK, content=f"Cliente: {customer.tax_id} - {customer.full_name} deletado com sucesso")
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content=f"Cliente: {customer.tax_id} - {customer.full_name} deletado com sucesso",
+            )
         
         except Exception as e:
             logger.error(f"Erro geral na exclusão do cliente: {e}")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Erro geral na exclusão do cliente: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Erro geral na exclusão do cliente: {e}",
+            ) from e
 
     @classmethod
     def get_customer_by_tax_id(cls, tax_id: str) -> CustomerFinder:
         """ Get a single customer by Tax ID
 
         Args:
-            customer_id (int): ID of customer
+            tax_id (str): 11 or 14 numbers for CPF or CNPJ
 
         Returns:
-            CustomersBase: Object of a single customer with all atributes 
+            CustomerFinder: Object of a single customer with full_name, tax_id and tel_number
         """
-        customer = CustomersQueries.get_customer_by_tax_id(tax_id=tax_id)          
-        return customer
+        customer = CustomersQueries.get_customer_by_tax_id(tax_id=tax_id)
+        return CustomerFinder(
+            full_name=customer.full_name,
+            tax_id=customer.tax_id,
+            tel_number=customer.tel_number,
+        )

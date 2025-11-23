@@ -1,13 +1,12 @@
 from typing import Optional
 
 from fastapi import APIRouter, Query
-import time
 from core.reports import Reports
 from interfaces.api.schemas.reports import (
     CustomerVehiclesReportResponse,
     CustomerDetailsResponse,
+    VehicleDetail
 )
-from interfaces.api.schemas.vehicles import VehicleDetail
 from services.enums import CustomerTypeEnum
 
 
@@ -50,4 +49,3 @@ async def get_vehicle_details(vehicle_id: int) -> VehicleDetail:
     Retorna o detalhe de um veículo específico para relatórios.
     """
     return Reports.get_vehicle_details(vehicle_id=vehicle_id)
-

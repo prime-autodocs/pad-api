@@ -1,12 +1,15 @@
+"""Schemas for reports"""
 from typing import List, Optional
 import datetime
 
 from pydantic import BaseModel
 
 from services.enums import CustomerTypeEnum, GenderEnum, CivilStatusEnum
+from services.enums import CategoryEnum
 
 
 class CustomerVehiclesReportItem(BaseModel):
+    """Customer vehicles report item"""
     id: int
     name: str
     tax_id: str
@@ -14,15 +17,21 @@ class CustomerVehiclesReportItem(BaseModel):
     total_vehicles: int
 
     class Config:
+        """Configs"""
         from_attributes = True
 
 
 class CustomerVehiclesReportResponse(BaseModel):
+    """Customer vehicles report response"""
     items: List[CustomerVehiclesReportItem]
     total_clients: int
 
+    class Config:
+        """Configs"""
+        from_attributes = True
 
 class CustomerDetailsCustomer(BaseModel):
+    """Customer details customer"""
     id: int
     tax_type: str
     tax_id: str
@@ -36,12 +45,15 @@ class CustomerDetailsCustomer(BaseModel):
     created_at: datetime.datetime
     updated_at: datetime.datetime
     updated_by: Optional[str] = None
+    customer_image: Optional[str] = None
 
     class Config:
+        """Configs"""
         from_attributes = True
 
 
 class CustomerDetailsAddress(BaseModel):
+    """Customer details address"""
     id: int
     customer_id: int
     address: Optional[str] = None
@@ -56,10 +68,12 @@ class CustomerDetailsAddress(BaseModel):
     updated_by: Optional[str] = None
 
     class Config:
+        """Configs"""
         from_attributes = True
 
 
 class CustomerDetailsDocuments(BaseModel):
+    """Customer details documents"""
     id: int
     customer_id: int
     identity_number: Optional[str] = None
@@ -77,6 +91,7 @@ class CustomerDetailsDocuments(BaseModel):
     updated_by: Optional[str] = None
 
     class Config:
+        """Configs"""
         from_attributes = True
 
 
@@ -91,3 +106,22 @@ class CustomerDetailsResponse(CustomerDetailsCustomer):
 
     address: Optional[CustomerDetailsAddress] = None
     documents: Optional[CustomerDetailsDocuments] = None
+
+class VehicleDetail(BaseModel):
+    """Detalhe de um veículo específico para relatórios."""
+    id: int = None
+    brand: str = None
+    model: str = None
+    number_plate: str = None
+    chassis: str = None
+    national_registry: str = None
+    year_fabric: str = None
+    year_model: str = None
+    fuel: str = None
+    color: str | None = None
+    category: CategoryEnum = None
+    certification_number: str | None = None
+    crlv_image: str | None = None
+    class Config:
+        """Configs"""
+        from_attributes = True

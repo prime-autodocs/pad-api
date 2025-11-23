@@ -1,11 +1,11 @@
-from fastapi import status, HTTPException
-
+"""Queries for vehicles"""
 from database.session import db_session
 from database.models.vehicles import Vehicles
 from services.enums import CategoryEnum, FuelEnum
 
 
 class VehiclesQueries:
+    """Queries for vehicles"""
 
     table = Vehicles
 
@@ -29,18 +29,15 @@ class VehiclesQueries:
             return vehicle
 
     @classmethod
-    def get_vehicle_detail(cls, vehicle_id: int):
-        """ Query to get a vehicle detail
+    def get_vehicle_by_id(cls, vehicle_id: int):
+        """Query to get a vehicle by id
 
         Args:
             vehicle_id (int): id from table vehicles
-
-        Returns:
-            Model Object: return vehicle detail
         """
         with db_session() as db:
             vehicle = db.query(Vehicles).filter(Vehicles.id == vehicle_id).first()
-            return vehicle
+            return vehicle if vehicle else None
 
     @classmethod
     def create_vehicle(cls, data: Vehicles):
@@ -64,20 +61,10 @@ class VehiclesQueries:
             # Normaliza combustível para o enum/campo correto
             fuel_value = data.fuel
             if isinstance(fuel_value, str):
-                v = fuel_value.lower().replace("ó", "o").replace("ô", "o").replace("ã", "a")
-
-                if v in ("alcool", "alchool", "álcool"):
-                    fuel_value = FuelEnum.alchool
-                elif v in ("gasolina", "gasoline"):
-                    fuel_value = FuelEnum.gasoline
-                elif v in ("gas", "gnv"):
-                    fuel_value = FuelEnum.gas
-                elif v in ("gasolina/alcool", "alcool/gasolina", "gasolina/álcool", "álcool/gasolina"):
-                    fuel_value = FuelEnum.alchool_gas
-                elif v in ("gasolina/gas", "gas/gasolina"):
-                    fuel_value = FuelEnum.gasoline_gas
-                elif v == "diesel":
-                    fuel_value = FuelEnum.diesel
+                v = fuel_value.lower()
+                # "Álcool', 'Gás', 'Gasolina', 'Álcool/Gasolina', 'Gasolina/Gas' or 'Diesel'"
+                if v in ("álcool", "gás", "gasolina", "álcool/gasolina", "gasolina/gas", "diesel"):
+                    fuel_value = FuelEnum(v)
             if isinstance(fuel_value, FuelEnum):
                 fuel_value = fuel_value.value
 
@@ -102,14 +89,23 @@ class VehiclesQueries:
 
     @classmethod
     def update_vehicle(cls, new_data: Vehicles):
+        """Query to update a vehicle
+
+        Args:
+            new_data (Model): a model with vehicle atributes
+        """
         with db_session() as db:
             db.merge(new_data)
             db.commit()
 
     @classmethod
     def delete_vehicle(cls, vehicle: Vehicles):
+        """Query to delete a vehicle
+
+        Args:
+            vehicle (Model): a model with vehicle atributes
+        """
         with db_session() as db:
             db.delete(vehicle)
             db.commit()
-
 
