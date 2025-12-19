@@ -110,16 +110,16 @@ class CustomerDetailsResponse(CustomerDetailsCustomer):
 class VehicleDetail(BaseModel):
     """Detalhe de um veículo específico para relatórios."""
     id: int = None
-    brand: str = None
-    model: str = None
+    brand: str | None = None
+    model: str | None = None
     number_plate: str = None
-    chassis: str = None
-    national_registry: str = None
-    year_fabric: str = None
-    year_model: str = None
-    fuel: str = None
+    chassis: str | None = None
+    national_registry: str | None = None
+    year_fabric: str | None = None
+    year_model: str | None = None
+    fuel: str | None = None
     color: str | None = None
-    category: CategoryEnum = None
+    category: CategoryEnum | None = None
     certification_number: str | None = None
     crlv_image: str | None = None
     class Config:

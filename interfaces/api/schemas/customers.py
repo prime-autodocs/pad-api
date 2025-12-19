@@ -109,6 +109,7 @@ class CustomerAvailable(BaseModel):
   id: int = None
   name: str = None
   tax_id: str = None
+  tel_number: str = None
 
   class Config:
      """Configs"""

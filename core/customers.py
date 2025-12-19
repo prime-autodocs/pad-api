@@ -48,7 +48,7 @@ class Customer:
             field_selected=field_selected,
         )
         return [
-            CustomerAvailable(id=c.id, name=c.full_name, tax_id=c.tax_id)
+            CustomerAvailable(id=c.id, name=c.full_name, tax_id=c.tax_id, tel_number=c.tel_number)
             for c in customers
         ]
 
@@ -92,6 +92,26 @@ class Customer:
             )
         else:
             customer_image_url = None
+
+        if data.documents:
+            if data.documents.driver_license_image:
+                data.documents.driver_license_image = VercelBlob.upload_with_delete(
+                    image_base64=data.documents.driver_license_image,
+                    image_name=f"driver_license_{data.tax_id}.png",
+                )
+            else:
+                data.documents.driver_license_image = None
+
+            if data.documents.smtr_permission_image:
+                data.documents.smtr_permission_image = VercelBlob.upload_with_delete(
+                image_base64=data.documents.smtr_permission_image,
+                    image_name=f"smtr_permission_{data.tax_id}.png",
+                )
+            else:
+                data.documents.smtr_permission_image = None
+        else:
+            data.documents.driver_license_image = None
+            data.documents.smtr_permission_image = None
 
         # Mapeia os dados de entrada (Pydantic) para o model Customers
         customer_model = Customers(
@@ -152,13 +172,34 @@ class Customer:
         payload_dict = new_data.model_dump(exclude_unset=True)
         if new_data.customer_image:
             new_data.customer_image = VercelBlob.upload_with_delete(
-                image_base64=new_data.customer_image, 
+                image_base64=new_data.customer_image,
                 image_name=f"customer_photo_{customer_row.tax_id}.png",
             )
             new_image = True
         else:
             new_data.customer_image = customer_row.customer_image
             new_image = False
+
+        if new_data.documents:
+            if new_data.documents.driver_license_image:
+                new_data.documents.driver_license_image = VercelBlob.upload_with_delete(
+                    image_base64=new_data.documents.driver_license_image,
+                    image_name=f"driver_license_{customer_row.tax_id}.png",
+                )
+            else:
+                new_data.documents.driver_license_image = None
+
+            if new_data.documents.smtr_permission_image:
+                new_data.documents.smtr_permission_image = VercelBlob.upload_with_delete(
+                    image_base64=new_data.documents.smtr_permission_image,
+                    image_name=f"smtr_permission_{customer_row.tax_id}.png",
+                )
+            else:
+                new_data.documents.smtr_permission_image = None
+        else:
+            new_data.documents.driver_license_image = None
+            new_data.documents.smtr_permission_image = None
+
         columns_changed = []
         for key, value in payload_dict.items():
             # Campos de address/documents são tratados separadamente
