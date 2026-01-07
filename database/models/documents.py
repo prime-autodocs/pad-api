@@ -18,6 +18,7 @@ class Documents(Base):
     smtr_permission_number = Column("smtr_permission_number", String(255))
     smtr_permission_image = Column("smtr_permission_image", String(255))
     smtr_ratr_number = Column("smtr_ratr_number", String(255))
+    course_due_date = Column("course_due_date", Date)
     created_at = Column(
         "created_at",
         TIMESTAMP(timezone=True),

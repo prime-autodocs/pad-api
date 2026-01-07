@@ -1,3 +1,4 @@
+"""Queries for customers"""
 from typing import Optional
 
 from fastapi import status, HTTPException
@@ -12,7 +13,7 @@ from services.enums import TaxTypeEnum
 
 
 class CustomersQueries:
-
+    """Queries for customers"""
     table = Customers
 
     @classmethod
@@ -143,6 +144,7 @@ class CustomersQueries:
                     smtr_permission_number=documents.smtr_permission_number,
                     smtr_permission_image=documents.smtr_permission_image,
                     smtr_ratr_number=documents.smtr_ratr_number,
+                    course_due_date=documents.course_due_date,
                 )
                 db.add(documents_row)
 
@@ -211,6 +213,7 @@ class CustomersQueries:
                     "smtr_permission_number",
                     "smtr_permission_image",
                     "smtr_ratr_number",
+                    "course_due_date",
                 ):
                     value = getattr(documents, field, None)
                     if value is not None:
@@ -220,6 +223,11 @@ class CustomersQueries:
 
     @classmethod
     def delete_customer(cls, customer: Customers):
+        """Query to delete a customer
+
+        Args:
+            customer (Model): a model with customer atributes
+        """
         with db_session() as db:
             # Remove dependências (documents, address, vehicles) antes de deletar o cliente
             db.query(Documents).filter(Documents.customer_id == customer.id).delete()
@@ -228,4 +236,3 @@ class CustomersQueries:
 
             db.delete(customer)
             db.commit()
-

@@ -72,7 +72,7 @@ class DocumentsCreate(BaseModel):
    smtr_permission_number: str | None = None
    smtr_permission_image: str | None = None
    smtr_ratr_number: str | None = None
-
+   course_due_date: datetime.date | None = None
    class Config:
       """Configs"""
       from_attributes = True
