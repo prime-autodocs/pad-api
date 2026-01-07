@@ -1,4 +1,5 @@
 ## PrimeAutoDocs API
+### v.2.0.0
 
 API em FastAPI para gestão de clientes, veículos e relatórios da PrimeAutoDocs, com suporte a autenticação, dashboards, feature flags e relatórios analíticos.
 
