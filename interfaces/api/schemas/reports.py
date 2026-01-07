@@ -85,6 +85,7 @@ class CustomerDetailsDocuments(BaseModel):
     smtr_permission_number: Optional[str] = None
     smtr_permission_image: Optional[str] = None
     smtr_ratr_number: Optional[str] = None
+    course_due_date: Optional[datetime.date] = None
     created_at: datetime.datetime
     updated_at: datetime.datetime
     updated_by: Optional[str] = None
