@@ -5,7 +5,6 @@ import datetime
 from pydantic import BaseModel
 
 from services.enums import CustomerTypeEnum, GenderEnum, CivilStatusEnum
-from services.enums import CategoryEnum
 
 
 class CustomerVehiclesReportItem(BaseModel):
@@ -119,7 +118,7 @@ class VehicleDetail(BaseModel):
     year_model: str | None = None
     fuel: str | None = None
     color: str | None = None
-    category: CategoryEnum | None = None
+    category:  str | None = None
     certification_number: str | None = None
     crlv_image: str | None = None
     class Config:

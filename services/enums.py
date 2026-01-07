@@ -39,9 +39,3 @@ class TaxTypeEnum(enum.Enum):
     """Type of tax id of the customer"""
     CPF = 'CPF'
     CNPJ = 'CNPJ'
-    
-@enum.unique
-class CategoryEnum(enum.Enum):
-    """Type of vehicle category"""
-    aluguel = 'Aluguel'
-    particular = 'Particular'

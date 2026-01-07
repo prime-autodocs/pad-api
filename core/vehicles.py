@@ -12,6 +12,7 @@ from services.utils.vehicle_validation import vehicle_data_validation
 from services.utils.vehicle_data_formatter import data_formatter
 from database.queries.vehicles_history import VehiclesHistoriesQueries
 from database.queries.customers import CustomersQueries
+from services.utils.vercel_blob import VercelBlob
 
 
 class Vehicle:
@@ -47,6 +48,7 @@ class Vehicle:
 
         # Adiciona campo calculado (por enquanto hardcoded)
         for v in vehicles:
+            v.category = v.category.lower()
             v.customer_name = vehicle_customer.full_name
             v.tax_id = vehicle_customer.tax_id
             setattr(v, "last_legalization_year", 2025)
@@ -63,6 +65,15 @@ class Vehicle:
         Returns:
             Message of success
         """
+
+        if data.crlv_image:
+            data.crlv_image = VercelBlob.upload_with_delete(
+                image_base64=data.crlv_image,
+                image_name=f"crlv_image_{data.number_plate}.png",
+            )
+        else:
+            data.crlv_image = None
+
         validation = vehicle_data_validation(payload=data)
         if not validation.get("is_valid"):
             raise HTTPException(
@@ -100,6 +111,17 @@ class Vehicle:
         Exceptions:
             400: General update error
         """
+        
+        if new_data.crlv_image:
+            new_data.crlv_image = VercelBlob.upload_with_delete(
+                image_base64=new_data.crlv_image,
+                image_name=f"crlv_image_{new_data.number_plate}.png",
+            )
+            new_image = True
+        else:
+            new_data.crlv_image = None
+            new_image = False
+
         validation = vehicle_data_validation(payload=new_data)
         if not validation.get("is_valid"):
             raise HTTPException(
@@ -116,6 +138,9 @@ class Vehicle:
                 if current_value != value:
                     columns_changed.append(key)
                     setattr(vehicle_row, key, value)
+
+        if new_image:
+            vehicle_row.crlv_image = new_data.crlv_image
 
         vehicle_row.updated_by = "Isaac"
 

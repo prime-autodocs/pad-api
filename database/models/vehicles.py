@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, Enum, String, TIMESTAMP, text
 
-from services.enums import FuelEnum, CategoryEnum
+from services.enums import FuelEnum
 from database.base import Base
 
 
@@ -18,7 +18,7 @@ class Vehicles(Base):
     year_model = Column("year_model", String(4))
     fuel = Column("fuel", Enum(FuelEnum))
     color = Column("color", String(255))
-    category = Column("category", Enum(CategoryEnum))
+    category = Column("category", String(255))
     certification_number = Column("certification_number", String(255))
     crlv_image = Column("crlv_image", String(255))
     created_at = Column("created_at", TIMESTAMP(timezone=True), server_default=text("CURRENT_TIMESTAMP"), nullable=False)

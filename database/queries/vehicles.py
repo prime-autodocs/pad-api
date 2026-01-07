@@ -1,7 +1,7 @@
 """Queries for vehicles"""
 from database.session import db_session
 from database.models.vehicles import Vehicles
-from services.enums import CategoryEnum, FuelEnum
+from services.enums import FuelEnum
 
 
 class VehiclesQueries:
@@ -47,16 +47,6 @@ class VehiclesQueries:
             data (Model): a model with vehicle atributes
         """
         with db_session() as db:
-            # Normaliza categoria para o enum/campo correto
-            category_value = data.category
-            if isinstance(category_value, str):
-                value_lower = category_value.lower()
-                if value_lower == "particular":
-                    category_value = CategoryEnum.particular
-                elif value_lower == "rent":
-                    category_value = CategoryEnum.rent
-            if isinstance(category_value, CategoryEnum):
-                category_value = category_value.value
 
             # Normaliza combustível para o enum/campo correto
             fuel_value = data.fuel
@@ -79,7 +69,7 @@ class VehiclesQueries:
                 year_model=data.year_model,
                 fuel=fuel_value,
                 color=data.color,
-                category=category_value,
+                category=data.category,
                 certification_number=data.certification_number,
                 crlv_image=data.crlv_image,
             )
