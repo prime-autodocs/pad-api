@@ -10,9 +10,8 @@ from database.queries.vehicles import VehiclesQueries
 from database.models.vehicles import Vehicles
 from services.utils.vehicle_validation import vehicle_data_validation
 from services.utils.vehicle_data_formatter import data_formatter
-from database.queries.vehicles_history import VehiclesHistoriesQueries
-from database.queries.customers import CustomersQueries
 from services.utils.vercel_blob import VercelBlob
+from database.queries.customers import CustomersQueries
 
 
 class Vehicle:
@@ -48,7 +47,6 @@ class Vehicle:
 
         # Adiciona campo calculado (por enquanto hardcoded)
         for v in vehicles:
-            v.category = v.category.lower()
             v.customer_name = vehicle_customer.full_name
             v.tax_id = vehicle_customer.tax_id
             setattr(v, "last_legalization_year", 2025)
