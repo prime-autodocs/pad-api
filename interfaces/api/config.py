@@ -8,7 +8,6 @@ from interfaces.api.routers.auth import router as auth
 from interfaces.api.routers.dashboards import router as dashboards
 from interfaces.api.routers.feature_flags import router as feature_flags
 from interfaces.api.routers.reports import router as reports
-from interfaces.api.routers.webhook import router as webhook
 
 
 def create_app() -> fastapi.FastAPI:
@@ -35,6 +34,5 @@ def create_app() -> fastapi.FastAPI:
     app.include_router(dashboards, prefix="/dashboards", tags=["dashboards"])
     app.include_router(feature_flags, prefix="/feature-flags", tags=["feature-flags"])
     app.include_router(reports, prefix="/reports", tags=["reports"])
-    app.include_router(webhook, prefix="/webhook", tags=["webhook"])
 
     return app
